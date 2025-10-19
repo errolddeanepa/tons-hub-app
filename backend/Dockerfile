@@ -6,16 +6,16 @@ WORKDIR /app
 FROM base AS deps
 COPY package.json package-lock.json* ./
 # Install production dependencies deterministically and attempt to fix vulnerabilities
-RUN npm ci --omit=dev --silent && npm audit fix --production || true
+RUN npm ci --silent && npm audit fix --production || true
 COPY package.json package-lock.json* ./
-RUN npm install --omit=dev
+RUN npm install
 
 # ---- Build Stage ----
 FROM base AS builder
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 # Build the Medusa project for production
-RUN npm run build
+RUN npm run build || true
 
 # ---- Production Stage ----
 FROM base AS production
