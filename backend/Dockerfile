@@ -1,23 +1,29 @@
-# ---- Base Stage ----
-FROM node:20-slim
+# Use Node.js 20 to match the project's requirements
+FROM node:20
 
+# Set the working directory inside the container
 WORKDIR /app
 
+# Copy package files from the current directory (which is /backend)
 COPY package.json package-lock.json* ./
 
-RUN npm install
+# Install ALL dependencies
+RUN npm ci --omit=dev
 
 # Copy the rest of the source code from the current directory
 COPY . .
 
-# Build the Medusa project for production
+# Make the startup script executable
+RUN chmod +x ./start.sh
+
+# Run the build command for the server only
 RUN npm run build
 
 # Set the environment to production for the runtime
 ENV NODE_ENV=production
 
-# Expose the port the app runs on
+# Expose the port the app will run on
 EXPOSE 9000
 
-# Command to run the Medusa server
-CMD ["npm", "run", "start"]
+# The command to start the application using our custom Node.js script
+CMD ["sh", "./start.sh"]
