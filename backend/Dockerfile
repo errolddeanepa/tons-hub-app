@@ -1,30 +1,20 @@
 # ---- Base Stage ----
-FROM node:20-slim AS base
+FROM node:20-slim
+
 WORKDIR /app
 
-# ---- Dependencies Stage ----
-FROM base AS deps
 COPY package.json package-lock.json* ./
-# Install production dependencies deterministically and attempt to fix vulnerabilities
-RUN npm ci --silent && npm audit fix --production || true
-COPY package.json package-lock.json* ./
+
 RUN npm install
 
-# ---- Build Stage ----
-FROM base AS builder
-COPY --from=deps /app/node_modules ./node_modules
+# Copy the rest of the source code from the current directory
 COPY . .
+
 # Build the Medusa project for production
-RUN npm run build || true
+RUN npm run build
 
-# ---- Production Stage ----
-FROM base AS production
+# Set the environment to production for the runtime
 ENV NODE_ENV=production
-
-# Copy built files and production node_modules
-COPY --from=builder /app/dist ./dist
-COPY --from=builder /app/package.json ./package.json
-COPY --from=deps /app/node_modules ./node_modules
 
 # Expose the port the app runs on
 EXPOSE 9000
