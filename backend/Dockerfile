@@ -1,5 +1,5 @@
 # Use Node.js 20 to match the project's requirements
-FROM node:20-alpine
+FROM node:22-alpine AS builder
 
 # Set the working directory inside the container
 WORKDIR /app
