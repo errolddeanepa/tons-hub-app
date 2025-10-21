@@ -1,29 +1,22 @@
-export default {
-  projectConfig: {
-    database_type: "postgres",
-    database_url: process.env.DATABASE_URL,
-    
-    store_cors: process.env.STORE_CORS,
-    admin_cors: process.env.ADMIN_CORS,
-    
+import { loadEnv, defineConfig } from '@medusajs/framework/utils'
+
+loadEnv(process.env.NODE_ENV || 'development', process.cwd())
+
+module.exports = defineConfig({
+  projectConfig:{
+    databaseUrl: process.env.DATABASE_URL,
+    redisUrl: process.env.REDIS_URL || "redis://default:AUppAAIncDIyOTBmYzY0MWU4YTg0ZmM1YmUxZGQ2MWU1MmI2MDNmOXAyMTkwNDk@comic-bream-19049.upstash.io:6379",
+
+    cookieOptions: {
+      sameSite: "lax",
+      secure: false,
+    },
     http: {
-      jwtSecret: process.env.JWT_SECRET,
-      cookieSecret: process.env.COOKIE_SECRET,
-    },
-  },
-  modules: {
-    eventBus: {
-      resolve: "@medusajs/event-bus-redis",
-      options: {
-        redisUrl: process.env.REDIS_URL
-      },
-    },
-    cacheService: {
-      resolve: "@medusajs/cache-redis",
-      options: {
-        redisUrl: process.env.REDIS_URL
-      },
-    },
-  },
-  plugins: [],
-};
+      storeCors: process.env.STORE_CORS || "https://www.tonsgamehub.com,http://localhost:8000",
+      adminCors: process.env.ADMIN_CORS || "http://localhost:9000",
+      authCors: process.env.AUTH_CORS || "https://www.tonsgamehub.com,http://localhost:8000,http://localhost:9000",
+      jwtSecret: process.env.JWT_SECRET || "supersecret",
+      cookieSecret: process.env.COOKIE_SECRET || "supersecret",
+    }
+  }
+})
