@@ -22,6 +22,10 @@ RUN npm run build
 # Set the environment to production for the runtime
 ENV NODE_ENV=production
 
+COPY --from=builder /app/dist ./dist
+COPY --from=builder /app/package.json ./package.json
+COPY --from=deps /app/node_modules ./node_modules
+
 # Expose the port the app will run on
 EXPOSE 9000
 
